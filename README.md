@@ -1,1 +1,2 @@
-# vk-photo-loader
+# IT DON'T WORK FOR NOW
+# WIP
