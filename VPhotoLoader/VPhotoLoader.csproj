@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A0EE6997-9768-4EC5-A446-C2B6130E7654}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>VPhotoLoader</RootNamespace>
+    <AssemblyName>VPhotoLoader</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>C:\Documents and Settings\Alexandr\Рабочий стол\Library\Json70r1\Bin\Net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SQLite, Version=1.0.94.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Api\Models\Album.cs" />
+    <Compile Include="Api\Models\Enums.cs" />
+    <Compile Include="Api\Models\ErrorResonse.cs" />
+    <Compile Include="Api\Models\Group.cs" />
+    <Compile Include="Api\Models\Photo.cs" />
+    <Compile Include="Api\Models\PhotoExtended.cs" />
+    <Compile Include="Api\Models\RequestParam.cs" />
+    <Compile Include="Api\Models\Responses.cs" />
+    <Compile Include="Api\Models\User.cs" />
+    <Compile Include="Api\Models\IVkPage.cs" />
+    <Compile Include="AppPaths.cs" />
+    <Compile Include="Authorization\Authorization.cs" />
+    <Compile Include="Authorization\AuthorizationException.cs" />
+    <Compile Include="Forms\AuthorizationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AuthorizationForm.Designer.cs">
+      <DependentUpon>AuthorizationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChooseView.cs" />
+    <Compile Include="Comparators.cs" />
+    <Compile Include="Forms\ChooseForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseForm.Designer.cs">
+      <DependentUpon>ChooseForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\AddFromLinkForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\AddFromLinkForm.Designer.cs">
+      <DependentUpon>AddFromLinkForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Controller.cs" />
+    <Compile Include="Core\CheckableItem.cs" />
+    <Compile Include="Core\EventArgs\AddFromLink.cs" />
+    <Compile Include="Core\EventArgs\Check.cs" />
+    <Compile Include="Core\EventArgs\Index.cs" />
+    <Compile Include="Core\EventArgs\Indices.cs" />
+    <Compile Include="Core\Interfaces\ICheckable.cs" />
+    <Compile Include="Core\Interfaces\ICaptchaSolver.cs" />
+    <Compile Include="Core\Interfaces\IChooseView.cs" />
+    <Compile Include="Core\Interfaces\IMainView.cs" />
+    <Compile Include="Core\Interfaces\IProgress.cs" />
+    <Compile Include="Core\PhotoSourceCollection.cs" />
+    <Compile Include="Core\PhotoSourceItem.cs" />
+    <Compile Include="Core\PhotoZ.cs" />
+    <Compile Include="Core\ProgressReporter.cs" />
+    <Compile Include="Core\VKEngine.cs" />
+    <Compile Include="Core\Logger.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PortableSettingPovider.cs" />
+    <Compile Include="SqLiteManager\ISqlProvider.cs" />
+    <Compile Include="SqLiteManager\SQLiteProvider.cs" />
+    <Compile Include="Api\Models\ApiException.cs" />
+    <Compile Include="Api\VKApi.cs" />
+    <EmbeddedResource Include="Forms\AuthorizationForm.resx">
+      <DependentUpon>AuthorizationForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ChooseForm.resx">
+      <DependentUpon>ChooseForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\AddFromLinkForm.resx">
+      <DependentUpon>AddFromLinkForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\check_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\uncheck_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\clear_16x16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль Microsoft .NET Framework 4 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>Клиентский профиль .NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Установщик Windows 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
