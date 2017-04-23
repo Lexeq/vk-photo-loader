@@ -19,5 +19,10 @@ namespace VPhotoLoader.Core
             Item = item;
             Check = check;
         }
+
+        public override string ToString()
+        {
+            return Item.ToString();
+        }
     }
 }

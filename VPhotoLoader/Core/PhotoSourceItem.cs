@@ -19,7 +19,7 @@ namespace VPhotoLoader.Core
         public PhotoSourceItem(int id, string title, IEnumerable<Album> albums)
         {
             Id = id;
-            Title = Title;
+            Title = title;
             Albums = albums.Distinct().Select(a => new CheckableItem<Album>(a, true)).ToArray();
             Check = true;
         }

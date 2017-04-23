@@ -15,6 +15,12 @@ namespace VPhotoLoader.Core
 
         private List<PhotoSourceItem> _srcs;
 
+        public PhotoSourceCollection()
+        {
+            locker = new object();
+            _srcs = new List<PhotoSourceItem>();
+        }
+
         public void Add(Album album)
         {
             Add(new PhotoSourceItem(album.OwnerId, "[A] " + album.Title, new[] { album }));

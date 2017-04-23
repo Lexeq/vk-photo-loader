@@ -223,9 +223,15 @@ namespace VPhotoLoader.Core
 
         public OwnerInfo(string name, User[] friends, User[] subs, Group[] groups)
         {
+            _name = name;
             _friends = friends;
             _groups = groups;
             _subs = subs;
+        }
+
+        public override string ToString()
+        {
+            return Name;
         }
     }
 }

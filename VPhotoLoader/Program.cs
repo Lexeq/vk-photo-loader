@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using VPhotoLoader.Authorization;
 using VPhotoLoader.Api;
 using System.IO;
+using VPhotoLoader;
 using VPhotoLoader.Core;
 using VPhotoLoader.Forms;
 
@@ -53,7 +54,8 @@ namespace VPhotoLoader
             VKEngine e = new VKEngine(db, api);
 
             var mainForm = new MainForm();
-            Controller c = new Controller(mainForm, e);
+            Chooser ch = new Chooser();
+            Controller c = new Controller(mainForm, ch, e);
             Application.Run(mainForm);
         }
 

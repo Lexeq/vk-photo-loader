@@ -5,6 +5,7 @@ using VPhotoLoader.Api;
 using System.Threading;
 using System.Threading.Tasks;
 using VPhotoLoader.VPL;
+using System.Collections.Specialized;
 
 namespace VPhotoLoader.Core
 {
@@ -23,10 +24,24 @@ namespace VPhotoLoader.Core
 
         private PhotoCollection[] newPhotos;
 
-        public Controller(IMainView view, VKEngine vk)
+        public Controller(IMainView view, IChooseView chooseViev, VKEngine vk)
         {
             _mainViev = view;
+            SubscribeToView(_mainViev);
+
+            _chooseView = chooseViev;
+
             _vk = vk;
+            _vk.OwnerChanged += new EventHandler(_vk_OwnerChanged);
+            _vk_OwnerChanged(null, null);
+
+            _photoSources = new PhotoSourceCollection();
+            _photoSources.CollectionChanged += new NotifyCollectionChangedEventHandler(_photoSources_CollectionChanged);
+        }
+
+        void _photoSources_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            _mainViev.Sources = _photoSources.ToArray();
         }
 
         private void SubscribeToView(IMainView view)
@@ -44,6 +59,11 @@ namespace VPhotoLoader.Core
             view.LogoutPressed += new EventHandler(view_LogoutPressed);
             view.RemoveSourcePressed += new EventHandler<IndexEventArgs>(view_RemoveSourcePressed);
             view.SelectAlbumsPressed += new EventHandler<IndexEventArgs>(view_SelectAlbumsPressed);
+        }
+
+        void _vk_OwnerChanged(object sender, EventArgs e)
+        {
+            _mainViev.LoginStatus = _vk.Owner == null ? "Вход не выполнен" : _vk.Owner.ToString();
         }
 
         void view_GetImagesPressed(object sender, EventArgs e)
@@ -139,6 +159,10 @@ namespace VPhotoLoader.Core
             {
                 _photoSources.Add(album);
             }
+            else
+            {
+                _mainViev.ShowMessage("Incorrect link");
+            }
         }
 
         void view_AddFromGroupsPressed(object sender, EventArgs e)
@@ -164,8 +188,6 @@ namespace VPhotoLoader.Core
                 _photoSources.Add(item, _vk.GetAlbums(item.ID, true));
             }
         }
-
-
     }
 
     public static class CheckableItemExt

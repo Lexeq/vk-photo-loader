@@ -58,21 +58,28 @@ namespace VPhotoLoader.Forms
         {
             set
             {
-                lblAccauntInfo.Invoke(new Action<string>((v) =>
+                if (this.InvokeRequired)
                 {
-                    lblAccauntInfo.Text = v;
-                }), value);
+                    lblAccauntInfo.Invoke(new Action<string>((v) =>
+                    {
+                        lblAccauntInfo.Text = v;
+                    }), value);
+                }
+                else
+                {
+                    lblAccauntInfo.Text = value;
+                }
             }
         }
 
-        public CheckableItem<object>[] Sources
+        public ICheckable[] Sources
         {
             set
             {
                 clbPages.Items.Clear();
                 foreach (var item in value)
                 {
-                    clbPages.Items.Add(item.Item, item.Check);
+                    clbPages.Items.Add(item.ToString(), item.Check);
                 }
             }
         }

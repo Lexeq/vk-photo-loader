@@ -37,6 +37,6 @@ namespace VPhotoLoader.Core
 
         event EventHandler<CheckEventArgs> ItemCheck;
 
-        CheckableItem<object>[] Sources { set; }
+        ICheckable[] Sources { set; }
     }
 }
