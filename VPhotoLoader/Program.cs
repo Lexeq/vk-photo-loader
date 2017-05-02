@@ -36,26 +36,23 @@ namespace VPhotoLoader
             }
 
             //Init Api
-            VKApi api = null;
 
             var args = ParseArgs(Environment.GetCommandLineArgs());
-            VKEngine eng = new VKEngine(new SqLiteManager.SQLiteProvider(AppPaths.DatabaseFilePath));
             if (args.ContainsKey("token") && args.ContainsKey("user"))
             {
-                api = new VKApi(args["user"], args["token"]);
+                VKSession.API = new VKApi(args["user"], args["token"]);
             }
-            else if (File.Exists(AppPaths.SessionFilePath))
+            else 
             {
-                    var file = File.ReadAllLines(AppPaths.SessionFilePath);
-                    api = new VKApi(file[0], file[1]);
+                VKSession.API = VKSession.FromFile(AppPaths.SessionFilePath);
             }
 
             //Other
-            VKEngine e = new VKEngine(db, api);
-
-            var mainForm = new MainForm();
+            VKEngine e = new VKEngine(db);
+            MainForm mainForm = new MainForm();
             Chooser ch = new Chooser();
             Controller c = new Controller(mainForm, ch, e);
+
             Application.Run(mainForm);
         }
 

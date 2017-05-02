@@ -10,7 +10,6 @@ namespace VPhotoLoader.Core
     public class PhotoSourceCollection : INotifyCollectionChanged, IEnumerable<PhotoSourceItem>
     {
         private readonly string DefaultPSName = "Albums";
-        private int defaultId = int.MaxValue;
         private object locker;
 
         private List<PhotoSourceItem> _srcs;
@@ -31,14 +30,13 @@ namespace VPhotoLoader.Core
             Add(new PhotoSourceItem(page.ID, page.ToString(), albums));
         }
 
-        private void Add(PhotoSourceItem item)
+        public void Add(PhotoSourceItem item)
         {
             lock (locker)
             {
                 if (!_srcs.Contains(item))
                 {
                     _srcs.Add(item);
-                    defaultId--;
                     OnCollectionChanged(new NotifyCollectionChangedEventArgs(
                         NotifyCollectionChangedAction.Add, item));
                 }

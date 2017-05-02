@@ -1,62 +1,43 @@
 ﻿#define OLD
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using VPhotoLoader.Api;
 using System.Collections.ObjectModel;
-using VPhotoLoader.SqLiteManager;
-using System.Threading.Tasks;
-using System.Threading;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using VPhotoLoader.Api;
+using VPhotoLoader.SqLiteManager;
 
 
 namespace VPhotoLoader.Core
 {
     class VKEngine
     {
-        private VKApi _api;
         private ISqlProvider _db;
-
-        private VKApi Api
-        {
-            get
-            {
-                return _api;
-            }
-            set
-            {
-                if (value != null)
-                {
-                    _api = value;
-                    Owner = GetUserInfo();
-                }
-                OnOwnerChanged();
-            }
-        }
 
         public OwnerInfo Owner { get; private set; }
 
         public event EventHandler OwnerChanged;
 
-        public VKEngine(ISqlProvider dbProvider, VKApi api)
+        public VKEngine(ISqlProvider dbProvider)
         {
             _db = dbProvider;
-            Api = api;
+            if (VKSession.API != null) OnOwnerChanged();
+            VKSession.ApiChanged += (o, e) => OnOwnerChanged();
         }
-
-        public VKEngine(ISqlProvider dbProvider) : this(dbProvider, null) { }
 
         public Album[] GetAlbums(int id, bool needSystem = true)
         {
             if (needSystem)
             {
-                return Api.GetAlbums(id, -7, -8, -15); //-7 -8 -15 ids for system albums
+                return VKSession.API.GetAlbums(id, -7, -8, -15); //-7 -8 -15 ids for system albums
             }
             else
             {
-                return Api.GetAlbums(id);
+                return VKSession.API.GetAlbums(id);
             }
         }
 
@@ -67,7 +48,7 @@ namespace VPhotoLoader.Core
                 {
                     List<PhotoCollection> unloaded = new List<PhotoCollection>();
                     PhotoSourceItem[] sources = (PhotoSourceItem[])o;
-                    VKApi api = Api;
+                    VKApi api = VKSession.API;
 
                     for (int psIndex = 0; psIndex < sources.Length; psIndex++)
                     {
@@ -146,17 +127,19 @@ namespace VPhotoLoader.Core
 
         public bool TryParsePage(string link, out IVkPage page)
         {
-            return Api.TryParsePage(link, out page);
+            return VKSession.API.TryParsePage(link, out page);
         }
 
         public bool TryParseAlbum(string link, out Album album)
         {
-            return Api.TryParseAlbum(link, out album);
+            return VKSession.API.TryParseAlbum(link, out album);
         }
 
-        public void SetNewApi(VKApi api)
+        public IVkPage GetByID(string id)
         {
-            Api = api;
+            if (id.StartsWith("-")) return VKSession.API.GetGroupsByIds(id.TrimStart('-'))[0];
+            else return VKSession.API.GetUsers(id)[0];
+
         }
 
         private Photo[] GetUnloadedPhotos(Album album, IEnumerable<Photo> photos)
@@ -193,15 +176,19 @@ namespace VPhotoLoader.Core
         private OwnerInfo GetUserInfo()
         {
             var owner = new OwnerInfo(
-                Api.GetUsers(Api.UserId)[0].ToString(),
-                Api.GetFriends(),
-                Api.GetSubscriptions(),
-                Api.GetGroups());
+                VKSession.API.UserId,
+                VKSession.API.GetUsers(VKSession.API.UserId)[0].ToString(),
+                VKSession.API.GetFriends(),
+                VKSession.API.GetSubscriptions(),
+                VKSession.API.GetGroups());
             return owner;
         }
 
         private void OnOwnerChanged()
         {
+            if (VKSession.API == null) Owner = null;
+            else Owner = GetUserInfo();
+
             if (OwnerChanged != null) OwnerChanged(this, EventArgs.Empty);
         }
     }
@@ -212,6 +199,7 @@ namespace VPhotoLoader.Core
         private IList<User> _subs;
         private IList<Group> _groups;
         private string _name;
+        private string _id;
 
         public ReadOnlyCollection<User> Friends { get { return new ReadOnlyCollection<User>(_friends); } }
 
@@ -221,12 +209,15 @@ namespace VPhotoLoader.Core
 
         public string Name { get { return _name; } }
 
-        public OwnerInfo(string name, User[] friends, User[] subs, Group[] groups)
+        public string ID { get { return _id; } }
+
+        public OwnerInfo(string id, string name, User[] friends, User[] subs, Group[] groups)
         {
             _name = name;
             _friends = friends;
             _groups = groups;
             _subs = subs;
+            _id = id;
         }
 
         public override string ToString()
@@ -234,4 +225,5 @@ namespace VPhotoLoader.Core
             return Name;
         }
     }
+
 }

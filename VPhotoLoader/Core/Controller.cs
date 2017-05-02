@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using VPhotoLoader.VPL;
 using System.Collections.Specialized;
+using System.IO;
+using System.Text;
 
 namespace VPhotoLoader.Core
 {
@@ -66,6 +68,153 @@ namespace VPhotoLoader.Core
             _mainViev.LoginStatus = _vk.Owner == null ? "Вход не выполнен" : _vk.Owner.ToString();
         }
 
+        void view_ClearSourcesPressed(object sender, EventArgs e)
+        {
+            _photoSources.Clear();
+        }
+
+        void view_SelectAlbumsPressed(object sender, IndexEventArgs e)
+        {
+            _chooseView.Choose(_photoSources[e.Index].Albums);
+        }
+
+        void view_RemoveSourcePressed(object sender, IndexEventArgs e)
+        {
+
+            _photoSources.RemoveAt(e.Index);
+        }
+
+        void view_CancelPressed(object sender, EventArgs e)
+        {
+            currentTaskTokenSource.Cancel();
+        }
+
+        void view_AddFromLinkPressed(object sender, AddFromLinkEventArgs e)
+        {
+            if (VKSession.API == null)
+            {
+                _mainViev.ShowMessage("Необходимо выполнить вход!");
+                return;
+            }
+
+            IVkPage page;
+            Album album;
+            if (_vk.TryParsePage(e.Link, out page))
+            {
+                _photoSources.Add(page, _vk.GetAlbums(page.ID));
+            }
+            else if (_vk.TryParseAlbum(e.Link, out album))
+            {
+                _photoSources.Add(album);
+            }
+            else
+            {
+                _mainViev.ShowMessage("Не удалось распознать ссылку.");
+            }
+        }
+
+        void view_AddFromGroupsPressed(object sender, EventArgs e)
+        {
+            if (VKSession.API == null)
+            {
+                _mainViev.ShowMessage("Необходимо выполнить вход!");
+                return;
+            }
+
+            try
+            {
+                var groups = _vk.Owner.Groups;
+                var cgroups = groups.ToCheckable(false).ToArray();
+                _chooseView.Choose(cgroups);
+
+                foreach (var item in cgroups.Checked())
+                {
+                    _photoSources.Add(item, _vk.GetAlbums(item.ID, true));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write("AddFromGroups", ex);
+                _mainViev.ShowMessage("Не удалось выполнить операцию");
+            }
+        }
+
+        void view_AddFromFriensPressed(object sender, EventArgs e)
+        {
+            if (VKSession.API == null)
+            {
+                _mainViev.ShowMessage("Необходимо выполнить вход!");
+                return;
+            }
+
+            try
+            {
+                var friends = _vk.Owner.Friends;
+                var cfriends = friends.ToCheckable(false).ToArray();
+                _chooseView.Choose(cfriends);
+
+                foreach (var item in cfriends.Checked())
+                {
+                    _photoSources.Add(item, _vk.GetAlbums(item.ID, true));
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write("AddFromFriends", ex);
+                _mainViev.ShowMessage("Не удалось выполнить операцию");
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+        void view_ExportSourcesPressed(object sender, EventArgs e)
+        {
+#warning FilePathChoooe
+            using (StreamWriter sw = new StreamWriter("src.imp", false, Encoding.UTF8))
+            {
+                foreach (var item in _photoSources)
+                {
+                    sw.WriteLine(string.Format("{0} {1}",
+                        item.Id,
+                        string.Join("|", item.Albums.Checked().Select(a => a.ID))));
+                }
+            }
+        }
+
+        void view_ImportSourcesPressed(object sender, EventArgs e)
+        {
+#warning FilePathChoooe
+            var file = File.ReadAllLines("src.imp", Encoding.UTF8);
+            _photoSources.Clear();
+
+            foreach (var str in file)
+            {
+                var parts = str.Split();
+                var id = parts[0];
+                var albums = parts[1].Split('|');
+                 IVkPage pg = _vk.GetByID(id);
+                PhotoSourceItem psi = new PhotoSourceItem(pg.ID, pg.ToString(), _vk.GetAlbums(pg.ID));
+
+                foreach (var item in psi.Albums)
+                {
+                    bool z = Array.IndexOf(albums, item.Item.ID.ToString()) >= 0;
+                    item.Check = z;
+                }
+
+                _photoSources.Add(psi);
+
+            }
+        }
+
         void view_GetImagesPressed(object sender, EventArgs e)
         {
             if (!currentTask.IsCompleted)
@@ -85,7 +234,7 @@ namespace VPhotoLoader.Core
                     var task = (Task<PhotoCollection[]>)ct;
                     if (task.IsFaulted)
                     {
-                        #warning logit
+#warning logit
                     }
                     else if (!task.IsCanceled)
                     {
@@ -93,22 +242,17 @@ namespace VPhotoLoader.Core
                     }
 
                 }, System.Threading.Tasks.TaskContinuationOptions.None);
-            
+
         }
 
-        void view_SelectAlbumsPressed(object sender, IndexEventArgs e)
-        {
-            _chooseView.Choose(_photoSources[e.Index].Albums);
-        }
 
-        void view_RemoveSourcePressed(object sender, IndexEventArgs e)
-        {
-            _photoSources.RemoveAt(e.Index);
-        }
+
+
 
         void view_LogoutPressed(object sender, EventArgs e)
         {
-            
+            File.Delete(AppPaths.SessionFilePath);
+            VKSession.API = null;
         }
 
         void view_LoginPressed(object sender, EventArgs e)
@@ -116,78 +260,24 @@ namespace VPhotoLoader.Core
             try
             {
                 var api = Authorization.Authorization.Authorize();
-                _vk.SetNewApi(api);
+                VKSession.API = api;
+                VKSession.ToFile(AppPaths.SessionFilePath);
             }
             catch (Authorization.AuthorizationException) { }
-            
+
         }
 
         void view_LoadImagesPressed(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+
+           
         }
 
-        void view_ImportSourcesPressed(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
-        void view_ExportSourcesPressed(object sender, EventArgs e)
-        {
-            throw new NotImplementedException();
-        }
 
-        void view_ClearSourcesPressed(object sender, EventArgs e)
-        {
-            _photoSources.Clear();
-        }
 
-        void view_CancelPressed(object sender, EventArgs e)
-        {
-            currentTaskTokenSource.Cancel();
-        }
 
-        void view_AddFromLinkPressed(object sender, AddFromLinkEventArgs e)
-        {
-            IVkPage page;
-            Album album;
-            if (_vk.TryParsePage(e.Link, out page))
-            {
-                _photoSources.Add(page, _vk.GetAlbums(page.ID));
-            }
-            else if (_vk.TryParseAlbum(e.Link, out album))
-            {
-                _photoSources.Add(album);
-            }
-            else
-            {
-                _mainViev.ShowMessage("Incorrect link");
-            }
-        }
 
-        void view_AddFromGroupsPressed(object sender, EventArgs e)
-        {
-            var groups = _vk.Owner.Groups;
-            var cgroups = groups.ToCheckable(false).ToArray();
-            _chooseView.Choose(cgroups);
-
-            foreach (var item in cgroups.Checked())
-            {
-                _photoSources.Add(item, _vk.GetAlbums(item.ID, true));
-            }
-        }
-
-        void view_AddFromFriensPressed(object sender, EventArgs e)
-        {
-            var friends = _vk.Owner.Friends;
-            var cfriends = friends.ToCheckable(false).ToArray();
-            _chooseView.Choose(cfriends);
-
-            foreach (var item in cfriends.Checked())
-            {
-                _photoSources.Add(item, _vk.GetAlbums(item.ID, true));
-            }
-        }
     }
 
     public static class CheckableItemExt

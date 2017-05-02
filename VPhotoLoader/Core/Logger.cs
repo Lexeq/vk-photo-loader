@@ -3,21 +3,15 @@ using System.IO;
 
 namespace VPhotoLoader
 {
-    class Logger
+    static class Logger
     {
-        private string _path;
-
-        public Logger(string logFilePath)
-        {
-            _path = logFilePath;
-        }
-
-        public bool Write(string message, Exception exception)
+        public static bool Write(string message, Exception exception)
         {
             try
             {
-                File.AppendAllText(_path,
-                    string.Format("[0] {1}/r/n{2}", DateTime.Now.ToString("d MMM yyyy HH:mm:ss"), exception.ToString()));
+                File.AppendAllText(
+                    AppPaths.LogFile,
+                    string.Format("[0] {1}{2}{3}{2}", DateTime.Now.ToString("d MMM yyyy HH:mm:ss"), message, Environment.NewLine, exception.ToString()));
                 return true;
             }
             catch

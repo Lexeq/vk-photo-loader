@@ -20,13 +20,11 @@ namespace VPhotoLoader.Api
         private const int apiRequestInterval = 350;
         private const string apiVersion = "5.28";
 
-        private string _apiToken;
-
         /*
         private CaptchaHandler _captchaHandler;
         public VKApi(string userId, string token, CaptchaHandler handler)
         {
-            this._apiToken = token;
+            this.Token = token;
             this.UserId = userId;
             _captchaHandler = handler;
         }
@@ -34,9 +32,11 @@ namespace VPhotoLoader.Api
 
         public string UserId { get; private set; }
 
+        public string Token { get; set; }
+
         public VKApi(string userId, string token)
         {
-            this._apiToken = token;
+            this.Token = token;
             this.UserId = userId;
         }
 
@@ -46,7 +46,7 @@ namespace VPhotoLoader.Api
         public Group[] GetGroups()
         {
             //TODO Make possible get more then 1K groups
-            string apiReq = String.Format(@"https://api.vk.com/method/groups.get?user_id={0}&extended=1&v=5.28&access_token={1}", UserId, _apiToken);
+            string apiReq = String.Format(@"https://api.vk.com/method/groups.get?user_id={0}&extended=1&v=5.28&access_token={1}", UserId, Token);
             var result = Invoke<Root<Group>>(apiReq);
             return result.Response.Items.ToArray();
         }
@@ -58,7 +58,7 @@ namespace VPhotoLoader.Api
         public Group[] GetGroupsByIds(params string[] ids)
         {
             if (ids.Length > 500) throw new ArgumentException("Число групп для запроса не должно превышать 500");
-            string apiReq = String.Format(@"https://api.vk.com/method/groups.getById?group_ids={0}&v=5.28&access_token={1}", string.Join(",", ids), _apiToken);
+            string apiReq = String.Format(@"https://api.vk.com/method/groups.getById?group_ids={0}&v=5.28&access_token={1}", string.Join(",", ids), Token);
             var result = Invoke<Response<Group>>(apiReq);
             return result.Items.ToArray();
         }
@@ -68,7 +68,7 @@ namespace VPhotoLoader.Api
         /// </summary>
         public User[] GetFriends()
         {
-            string apiReq = String.Format(@"https://api.vk.com/method/friends.get?user_id={0}&fields=sex&v=5.28&access_token={1}", UserId, _apiToken);
+            string apiReq = String.Format(@"https://api.vk.com/method/friends.get?user_id={0}&fields=sex&v=5.28&access_token={1}", UserId, Token);
             var result = Invoke<Root<User>>(apiReq);
             return result.Response.Items.ToArray();
         }
@@ -80,7 +80,7 @@ namespace VPhotoLoader.Api
         public User[] GetUsers(params string[] ids)
         {
             if (ids.Length > 1000) throw new ArgumentException("Число групп для запроса не должно превышать 500");
-            string apiReq = String.Format(@"https://api.vk.com/method/users.get?user_ids={0}&fields=sex&v=5.28&access_token={1}", string.Join(",", ids), _apiToken);
+            string apiReq = String.Format(@"https://api.vk.com/method/users.get?user_ids={0}&fields=sex&v=5.28&access_token={1}", string.Join(",", ids), Token);
             var result = Invoke<Response<User>>(apiReq);
             return result.Items.ToArray();
         }
@@ -91,7 +91,7 @@ namespace VPhotoLoader.Api
         public User[] GetSubscriptions()
         {
             //TODO Make possible get more then 200 Subscriptions
-            string apiReq = String.Format(@"https://api.vk.com/method/users.getSubscriptions?user_id={0}&v=5.28&access_token={1}", UserId, _apiToken);
+            string apiReq = String.Format(@"https://api.vk.com/method/users.getSubscriptions?user_id={0}&v=5.28&access_token={1}", UserId, Token);
             string json = GetJsonResponse(apiReq);
             var err = JsonConvert.DeserializeObject<ErrorResponse>(json);
             if (err.Error != null) throw new ApiException(err.Error.Message) { Params = err.Error.RequestParams.ToArray() };
@@ -125,7 +125,7 @@ namespace VPhotoLoader.Api
         /// <returns></returns>
         public Album[] GetAlbums(int ownerId, params int[] albumIds)
         {
-            string apiReq = string.Format(@"https://api.vk.com/method/photos.getAlbums?owner_id={0}&need_system={1}&album_ids={2}&v=5.28&access_token={3}", ownerId, 0, string.Join(",", albumIds), _apiToken);
+            string apiReq = string.Format(@"https://api.vk.com/method/photos.getAlbums?owner_id={0}&need_system={1}&album_ids={2}&v=5.28&access_token={3}", ownerId, 0, string.Join(",", albumIds), Token);
             var result = Invoke<Root<Album>>(apiReq);
             return result.Response.Items.ToArray();
         }
@@ -143,7 +143,7 @@ namespace VPhotoLoader.Api
             do
             {
                 string apiReq = string.Format(@"https://api.vk.com/method/photos.get?owner_id={0}&album_id={1}&count={2}&offset={3}&v=5.28&access_token={4}",
-                    album.OwnerId, album.ID, count, offset, _apiToken);
+                    album.OwnerId, album.ID, count, offset, Token);
                 var result = Invoke<Root<PhotoExtended>>(apiReq);
                 photoCount = result.Response.Count;
                 offset += count;

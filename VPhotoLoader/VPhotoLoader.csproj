@@ -136,6 +136,7 @@
     <Compile Include="SqLiteManager\SQLiteProvider.cs" />
     <Compile Include="Api\Models\ApiException.cs" />
     <Compile Include="Api\VKApi.cs" />
+    <Compile Include="VKSession.cs" />
     <EmbeddedResource Include="Forms\AuthorizationForm.resx">
       <DependentUpon>AuthorizationForm.cs</DependentUpon>
     </EmbeddedResource>
