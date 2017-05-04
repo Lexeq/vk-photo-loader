@@ -81,6 +81,7 @@ namespace VPhotoLoader.Forms
                 {
                     clbPages.Items.Add(item.ToString(), item.Check);
                 }
+                this.Invalidate();
             }
         }
 

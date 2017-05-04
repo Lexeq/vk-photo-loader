@@ -12,8 +12,6 @@ namespace VPhotoLoader
 
         public event EventHandler<ProgressChangedEventArgs> ProgressChanged;
 
-        public event EventHandler TaskComplete;
-
         protected virtual void OnReport(int value, object state)
         {
             if (ProgressChanged != null)

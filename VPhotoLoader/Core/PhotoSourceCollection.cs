@@ -9,10 +9,13 @@ namespace VPhotoLoader.Core
 {
     public class PhotoSourceCollection : INotifyCollectionChanged, IEnumerable<PhotoSourceItem>
     {
-        private readonly string DefaultPSName = "Albums";
         private object locker;
 
         private List<PhotoSourceItem> _srcs;
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        public int Count { get { return _srcs.Count; } }
 
         public PhotoSourceCollection()
         {
@@ -20,27 +23,29 @@ namespace VPhotoLoader.Core
             _srcs = new List<PhotoSourceItem>();
         }
 
-        public void Add(Album album)
+        public bool Add(IVkPage page, IEnumerable<Album> albums)
         {
-            Add(new PhotoSourceItem(album.OwnerId, "[A] " + album.Title, new[] { album }));
+            return Add(new PhotoSourceItem(page.ID, page.ToString(), albums));
         }
 
-        public void Add(IVkPage page, IEnumerable<Album> albums)
-        {
-            Add(new PhotoSourceItem(page.ID, page.ToString(), albums));
-        }
-
-        public void Add(PhotoSourceItem item)
+        public bool Add(PhotoSourceItem item)
         {
             lock (locker)
             {
-                if (!_srcs.Contains(item))
+                if (!this.Contains(item.Id))
                 {
                     _srcs.Add(item);
                     OnCollectionChanged(new NotifyCollectionChangedEventArgs(
                         NotifyCollectionChangedAction.Add, item));
+                    return true;
                 }
+                return false;
             }
+        }
+
+        public bool Contains(int id)
+        {
+            return _srcs.Exists(p => p.Id == id);
         }
 
         public void Clear()
@@ -68,8 +73,6 @@ namespace VPhotoLoader.Core
             var item = _srcs[index];
             Remove(item);
         }
-
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {

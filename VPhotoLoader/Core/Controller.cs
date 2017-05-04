@@ -8,6 +8,7 @@ using VPhotoLoader.VPL;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
+using System.ComponentModel;
 
 namespace VPhotoLoader.Core
 {
@@ -24,7 +25,7 @@ namespace VPhotoLoader.Core
         private readonly PhotoSourceCollection _photoSources;
         private readonly TaskProgressReporter _reporter;
 
-        private PhotoCollection[] newPhotos;
+        private PhotoCollection[] _newPhotos;
 
         public Controller(IMainView view, IChooseView chooseViev, VKEngine vk)
         {
@@ -33,12 +34,20 @@ namespace VPhotoLoader.Core
 
             _chooseView = chooseViev;
 
+            _reporter = new TaskProgressReporter();
+            _reporter.ProgressChanged += new EventHandler<ProgressChangedEventArgs>(_reporter_ProgressChanged);
             _vk = vk;
             _vk.OwnerChanged += new EventHandler(_vk_OwnerChanged);
             _vk_OwnerChanged(null, null);
 
             _photoSources = new PhotoSourceCollection();
             _photoSources.CollectionChanged += new NotifyCollectionChangedEventHandler(_photoSources_CollectionChanged);
+        }
+
+        void _reporter_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            _mainViev.TaskProgress = e.ProgressPercentage;
+            _mainViev.InfoLabel = e.UserState.ToString();
         }
 
         void _photoSources_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -105,7 +114,22 @@ namespace VPhotoLoader.Core
             }
             else if (_vk.TryParseAlbum(e.Link, out album))
             {
-                _photoSources.Add(album);
+                page = _vk.GetByID(album.OwnerId);
+                if (_photoSources.Contains(page.ID))
+                {
+                    _photoSources.First(p => p.Id == page.ID)
+                        .Albums.First(a => a.Item.ID == album.ID)
+                        .Check = true;
+                }
+                else
+                {
+                    var psi = new PhotoSourceItem(page.ID, page.ToString(), _vk.GetAlbums(page.ID));
+                    for (int i = 0; i < psi.Albums.Length; i++)
+                    {
+                        psi.Albums[i].Check = psi.Albums[i].Item.ID == album.ID;
+                    }
+                    _photoSources.Add(psi);
+                }
             }
             else
             {
@@ -165,9 +189,89 @@ namespace VPhotoLoader.Core
             }
         }
 
+        void view_GetImagesPressed(object sender, EventArgs e)
+        {
+            _newPhotos = null;
+
+            if (_photoSources.Checked().Count() == 0)
+            {
+                _mainViev.ShowMessage("Отсутствуют или не выбраны источники изображений.");
+                return;
+            }
+
+            if (currentTask != null && !currentTask.IsCompleted)
+            {
+                _mainViev.ShowMessage("Дождитесь завершения операции.");
+                return;
+            }
+
+            var sources = _photoSources.Checked().Cast<PhotoSourceItem>().ToArray();
+            
+            currentTaskTokenSource = new CancellationTokenSource();
+            _reporter_ProgressChanged(this, new ProgressChangedEventArgs(0, "Starting"));
+
+            _mainViev.LockInterface();
+
+            currentTask = _vk.GetUnloadedPhotosAsynch(sources, currentTaskTokenSource.Token, _reporter);
+
+            var t1 = currentTask.ContinueWith((ct) =>
+            {
+                var task = (Task<PhotoCollection[]>)ct;
+                if (task.IsFaulted)
+                {
+                    Logger.Write("GetImages", task.Exception); 
+                }
+                else if (!task.IsCanceled)
+                {
+                    _newPhotos = task.Result;
+                }
+
+                _mainViev.UnlockInterface();
+                _mainViev.InfoLabel = string.Format("Новых изображений: {0}", _newPhotos == null ? 0 : _newPhotos.Sum(p => p.Photos.Length));
+
+            }, System.Threading.Tasks.TaskContinuationOptions.None);
+
+        }
+
+        void view_LoadImagesPressed(object sender, EventArgs e)
+        {
+            if (_newPhotos == null)
+            {
+                _mainViev.ShowMessage("Отсутствуют изображения для загрузки.");
+                return;
+            }
+
+            if (currentTask != null && !currentTask.IsCompleted)
+            {
+                _mainViev.ShowMessage("Дождитесь завершения операции.");
+                return;
+            }
+
+            currentTaskTokenSource = new CancellationTokenSource();
+            _reporter_ProgressChanged(this, new ProgressChangedEventArgs(0, "Starting"));
+
+            _mainViev.LockInterface();
+
+            currentTask = _vk.LoadPhotosAsynch(_newPhotos, currentTaskTokenSource.Token, _reporter);
+
+            var t1 = currentTask.ContinueWith((ct) =>
+            {
+                var task = (Task<int>)ct;
+                if (task.IsFaulted)
+                {
+                    Logger.Write("LoadImages", task.Exception);
+                }
+                if (task.IsCanceled)
+                {
+                    _mainViev.InfoLabel = "Отменено";
+                }
+                _newPhotos = null;
+                _mainViev.UnlockInterface();
 
 
+            }, System.Threading.Tasks.TaskContinuationOptions.None);
 
+        }
 
 
 
@@ -201,7 +305,7 @@ namespace VPhotoLoader.Core
                 var parts = str.Split();
                 var id = parts[0];
                 var albums = parts[1].Split('|');
-                 IVkPage pg = _vk.GetByID(id);
+                 IVkPage pg = _vk.GetByID(int.Parse(id));
                 PhotoSourceItem psi = new PhotoSourceItem(pg.ID, pg.ToString(), _vk.GetAlbums(pg.ID));
 
                 foreach (var item in psi.Albums)
@@ -215,35 +319,7 @@ namespace VPhotoLoader.Core
             }
         }
 
-        void view_GetImagesPressed(object sender, EventArgs e)
-        {
-            if (!currentTask.IsCompleted)
-            {
-                _mainViev.ShowMessage("Отсутствуют или не выбраны источники изображений");
-                return;
-            }
 
-            var sources = _photoSources.Checked().Cast<PhotoSourceItem>().ToArray();
-
-            _mainViev.LockInterface();
-            currentTaskTokenSource = new CancellationTokenSource();
-
-            currentTask = _vk.GetUnloadedPhotosAsynch(sources, currentTaskTokenSource.Token, _reporter);
-            var t1 = currentTask.ContinueWith((ct) =>
-                {
-                    var task = (Task<PhotoCollection[]>)ct;
-                    if (task.IsFaulted)
-                    {
-#warning logit
-                    }
-                    else if (!task.IsCanceled)
-                    {
-                        newPhotos = task.Result;
-                    }
-
-                }, System.Threading.Tasks.TaskContinuationOptions.None);
-
-        }
 
 
 
@@ -267,11 +343,7 @@ namespace VPhotoLoader.Core
 
         }
 
-        void view_LoadImagesPressed(object sender, EventArgs e)
-        {
 
-           
-        }
 
 
 

@@ -76,7 +76,7 @@ namespace VPhotoLoader.Core
                 }, photoSources, ctoken);
         }
 
-        public Task<int> LoadPhotos(PhotoCollection[] photos, CancellationToken ctoken, ITaskProgress reporter = null)
+        public Task<int> LoadPhotosAsynch(PhotoCollection[] photos, CancellationToken ctoken, ITaskProgress reporter = null)
         {
             return Task.Factory.StartNew<int>((o) =>
             {
@@ -135,11 +135,10 @@ namespace VPhotoLoader.Core
             return VKSession.API.TryParseAlbum(link, out album);
         }
 
-        public IVkPage GetByID(string id)
+        public IVkPage GetByID(int id)
         {
-            if (id.StartsWith("-")) return VKSession.API.GetGroupsByIds(id.TrimStart('-'))[0];
-            else return VKSession.API.GetUsers(id)[0];
-
+            if (id < 0) return VKSession.API.GetGroupsByIds((Math.Abs(id)).ToString())[0];
+            else return VKSession.API.GetUsers(id.ToString())[0];
         }
 
         private Photo[] GetUnloadedPhotos(Album album, IEnumerable<Photo> photos)
