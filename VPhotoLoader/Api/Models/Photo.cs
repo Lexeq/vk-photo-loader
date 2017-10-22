@@ -23,17 +23,15 @@ namespace VPhotoLoader.Api
             Link = link;
         }
 
-        public static Photo FromPhotoExt(PhotoExtended photo)
+        public override int GetHashCode()
         {
-            string maxResolution;
-            if (photo.Photo2560 != null) maxResolution = photo.Photo2560;
-            else if (photo.Photo1280 != null) maxResolution = photo.Photo1280;
-            else if (photo.Photo807 != null) maxResolution = photo.Photo807;
-            else if (photo.Photo604 != null) maxResolution = photo.Photo604;
-            else if (photo.Photo130 != null) maxResolution = photo.Photo130;
-            else maxResolution = photo.Photo75;
+            return ID.GetHashCode();
+        }
 
-            return new Photo(photo.Id, photo.AlbumId, photo.OwnerId, maxResolution);
+        public override bool Equals(object obj)
+        {
+            Photo p = obj as Photo;
+            return p != null && p.ID.Equals(this.ID);
         }
     }
 }

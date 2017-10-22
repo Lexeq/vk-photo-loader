@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace VPhotoLoader.Api
 {
-    public class PhotoExtended
+    internal class PhotoExtended
     {
         private string _maxRes = null;
 
@@ -38,6 +38,19 @@ namespace VPhotoLoader.Api
         public int Height { get; set; }
 
         public int Date { get; set; }
+
+        public static Photo ToPhoto(PhotoExtended photo)
+        {
+            string maxResolution;
+            if (photo.Photo2560 != null) maxResolution = photo.Photo2560;
+            else if (photo.Photo1280 != null) maxResolution = photo.Photo1280;
+            else if (photo.Photo807 != null) maxResolution = photo.Photo807;
+            else if (photo.Photo604 != null) maxResolution = photo.Photo604;
+            else if (photo.Photo130 != null) maxResolution = photo.Photo130;
+            else maxResolution = photo.Photo75;
+
+            return new Photo(photo.Id, photo.AlbumId, photo.OwnerId, maxResolution);
+        }
 
         public override int GetHashCode()
         {

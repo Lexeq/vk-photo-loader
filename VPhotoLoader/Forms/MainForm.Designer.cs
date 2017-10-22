@@ -136,6 +136,7 @@
             this.clbPages.Size = new System.Drawing.Size(326, 154);
             this.clbPages.TabIndex = 6;
             this.clbPages.ThreeDCheckBoxes = true;
+            this.clbPages.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.clbPages_ItemCheck);
             this.clbPages.MouseDown += new System.Windows.Forms.MouseEventHandler(this.sourceList_MouseDown);
             this.clbPages.MouseEnter += new System.EventHandler(this.sourceList_MouseEnter);
             // 

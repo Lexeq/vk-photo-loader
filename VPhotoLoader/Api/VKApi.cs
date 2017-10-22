@@ -10,25 +10,12 @@ using Newtonsoft.Json.Linq;
 
 namespace VPhotoLoader.Api
 {
-
-    //  public delegate string CaptchaHandler(string img);
-
     public class VKApi
     {
         static private DateTime lastApiInvoke = DateTime.MinValue;
 
         private const int apiRequestInterval = 350;
         private const string apiVersion = "5.28";
-
-        /*
-        private CaptchaHandler _captchaHandler;
-        public VKApi(string userId, string token, CaptchaHandler handler)
-        {
-            this.Token = token;
-            this.UserId = userId;
-            _captchaHandler = handler;
-        }
-        */
 
         public string UserId { get; private set; }
 
@@ -103,24 +90,7 @@ namespace VPhotoLoader.Api
         /// <summary>
         /// Возвращает альбомы пользователя.
         /// </summary>
-        public Album[] GetAlbums(User user)
-        {
-            return GetAlbums(user.ID);
-        }
-
-        /// <summary>
-        /// Возвращает альбомы группы.
-        /// </summary>
-        public Album[] GetAlbums(Group group)
-        {
-            var id = group.ID;
-            return GetAlbums(id > 0 ? -id : id);
-        }
-
-        /// <summary>
-        /// Возвращает альбомы пользователя.
-        /// </summary>
-        /// <param name="ownerId">Идентификатор владельца альбома</param>
+        /// <param name="ownerId">Идентификатор владельца альбома (отрицательный для групп)</param>
         /// <param name="albumIds">Идентификаторы альбомов</param>
         /// <returns></returns>
         public Album[] GetAlbums(int ownerId, params int[] albumIds)
@@ -149,7 +119,7 @@ namespace VPhotoLoader.Api
                 offset += count;
                 photos.AddRange(result.Response.Items);
             } while (offset < photoCount);
-            return photos.ConvertAll<Photo>(pe => Photo.FromPhotoExt(pe)).ToArray();
+            return photos.ConvertAll<Photo>(pe => PhotoExtended.ToPhoto(pe)).ToArray();
         }
 
         public bool TryParseAlbum(string link, out Album result)
@@ -224,31 +194,11 @@ namespace VPhotoLoader.Api
         private T Invoke<T>(string requestString)
         {
             string req = requestString;
-            /*if (captcha != null)
-            {
-                req = string.Concat(requestString, "&captcha_sid=", captcha.Sid, "&captcha_key=", captcha.Key);
-            }
-            else
-            {
-                req = requestString;
-            }*/
+
             var json = GetJsonResponse(req);
             var err = JsonConvert.DeserializeObject<ErrorResponse>(json);
             if (err.Error != null)
             {
-             /*Captcha
-              * if (err.Error.Code == 14)
-                {
-                    JObject obj = JObject.Parse(json);
-                    var sid = obj["error"]["captcha_sid"].Value<string>();
-                    var img = obj["error"]["captcha_img"].Value<string>();
-                    var captcaResult = _captchaHandler(img);
-                    return Invoke<T>(requestString, new CaptchaSolve(sid, captcaResult));
-                }
-                else
-                {
-                    throw new ApiException(err.Error.Message) { Params = err.Error.RequestParams.ToArray() };
-                }*/
                 throw new ApiException(err.Error.Message) { Params = err.Error.RequestParams.ToArray() };
             }
             else

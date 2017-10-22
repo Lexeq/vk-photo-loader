@@ -70,6 +70,12 @@ namespace VPhotoLoader.Core
             view.LogoutPressed += new EventHandler(view_LogoutPressed);
             view.RemoveSourcePressed += new EventHandler<IndexEventArgs>(view_RemoveSourcePressed);
             view.SelectAlbumsPressed += new EventHandler<IndexEventArgs>(view_SelectAlbumsPressed);
+            view.ItemCheckStateChanged += new EventHandler<CheckEventArgs>(view_ItemCheckStateChanged);
+        }
+
+        void view_ItemCheckStateChanged(object sender, CheckEventArgs e)
+        {
+            _photoSources[e.Index].Check = e.Value;
         }
 
         void _vk_OwnerChanged(object sender, EventArgs e)

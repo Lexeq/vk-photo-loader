@@ -35,7 +35,7 @@ namespace VPhotoLoader.Core
 
         void ShowMessage(string message);
 
-        event EventHandler<CheckEventArgs> ItemCheck;
+        event EventHandler<CheckEventArgs> ItemCheckStateChanged;
 
         ICheckable[] Sources { set; }
     }

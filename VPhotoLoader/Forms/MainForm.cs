@@ -23,7 +23,7 @@ namespace VPhotoLoader.Forms
         public event EventHandler LoadImagesPressed;
         public event EventHandler ImportSourcesPressed;
         public event EventHandler ExportSourcesPressed;
-        public event EventHandler<CheckEventArgs> ItemCheck;
+        public event EventHandler<CheckEventArgs> ItemCheckStateChanged;
         
         public void ShowMessage(string message)
         {
@@ -90,12 +90,11 @@ namespace VPhotoLoader.Forms
         public MainForm()
         {
             InitializeComponent();
-            clbPages.ItemCheck += new ItemCheckEventHandler(clbPages_ItemCheck);
         }
 
         void clbPages_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (ItemCheck != null) ItemCheck(this, new CheckEventArgs(e.Index, clbPages.GetItemChecked(e.Index)));
+            if (ItemCheckStateChanged != null) ItemCheckStateChanged(this, new CheckEventArgs(e.Index, e.NewValue != CheckState.Unchecked));
         }
 
         #region CheckedListBox
@@ -232,8 +231,6 @@ namespace VPhotoLoader.Forms
 
 
         #endregion
-
-        //Old. Dirty. But works.
 
         public void UnlockInterface()
         {

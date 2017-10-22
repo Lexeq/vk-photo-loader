@@ -16,6 +16,7 @@ namespace VPhotoLoader.Core
 {
     class VKEngine
     {
+        private HashSet<char> UnallowabledChars = new HashSet<char>() { '*', '|', '\\', ':', '"', '<', '>', '?', '/' };
         private ISqlProvider _db;
 
         public OwnerInfo Owner { get; private set; }
@@ -33,7 +34,8 @@ namespace VPhotoLoader.Core
         {
             if (needSystem)
             {
-                return VKSession.API.GetAlbums(id, -7, -8, -15); //-7 -8 -15 ids for system albums
+                var alb = VKSession.API.GetAlbums(id, -7, -8, -15); //-7 -8 -15 ids for system albums
+                return alb.Where(a => !((a.ID == -7 || a.ID == -8 || a.ID == -15) && a.Size == 0)).ToArray();
             }
             else
             {
@@ -94,9 +96,12 @@ namespace VPhotoLoader.Core
                     {
                         foreach (var photo in item.Photos)
                         {
+#warning delIt
+                            //Thread.Sleep(900);
                             ctoken.ThrowIfCancellationRequested();
 
-                            string albumFolder = Path.Combine(AppPaths.ImageFolder, item.Owner, item.Album);
+                            string ownerName = item.Owner.Any(c => UnallowabledChars.Contains(c)) ? new string(item.Owner.Where(c => !UnallowabledChars.Contains(c)).ToArray()) : item.Owner;
+                            string albumFolder = Path.Combine(AppPaths.ImageFolder, ownerName, item.Album);
                             if (!Directory.Exists(albumFolder))
                             {
                                 Directory.CreateDirectory(albumFolder);

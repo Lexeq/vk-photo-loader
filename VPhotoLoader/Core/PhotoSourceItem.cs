@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using VPhotoLoader.Api;
+using System.Windows.Forms;
 
 namespace VPhotoLoader.Core
 {
