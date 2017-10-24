@@ -5,13 +5,13 @@ using System.Text;
 
 namespace VPhotoLoader.VPL
 {
-    public class AddFromLinkEventArgs : EventArgs
+    public class PathEventArgs : EventArgs
     {
-        public string Link { get; private set; }
+        public string Path { get; private set; }
 
-        public AddFromLinkEventArgs(string link)
+        public PathEventArgs(string path)
         {
-            Link = link;
+            Path = path;
         }
     }
 }

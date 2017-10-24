@@ -14,15 +14,15 @@ namespace VPhotoLoader.Forms
         public event EventHandler LogoutPressed;
         public event EventHandler AddFromFriensPressed;
         public event EventHandler AddFromGroupsPressed;
-        public event EventHandler<AddFromLinkEventArgs> AddFromLinkPressed;
+        public event EventHandler<PathEventArgs> AddFromLinkPressed;
         public event EventHandler ClearSourcesPressed;
         public event EventHandler<IndexEventArgs> RemoveSourcePressed;
         public event EventHandler<IndexEventArgs> SelectAlbumsPressed;
         public event EventHandler CancelPressed;
         public event EventHandler GetImagesPressed;
         public event EventHandler LoadImagesPressed;
-        public event EventHandler ImportSourcesPressed;
-        public event EventHandler ExportSourcesPressed;
+        public event EventHandler<PathEventArgs> ImportSourcesPressed;
+        public event EventHandler<PathEventArgs> ExportSourcesPressed;
         public event EventHandler<CheckEventArgs> ItemCheckStateChanged;
         
         public void ShowMessage(string message)
@@ -90,6 +90,8 @@ namespace VPhotoLoader.Forms
         public MainForm()
         {
             InitializeComponent();
+            openFileDialog1.InitialDirectory = Application.StartupPath;
+            saveFileDialog1.InitialDirectory = Application.StartupPath;
         }
 
         void clbPages_ItemCheck(object sender, ItemCheckEventArgs e)
@@ -193,7 +195,7 @@ namespace VPhotoLoader.Forms
                 form.ShowDialog();
                 if (form.DialogResult == DialogResult.OK)
                 {
-                    if (AddFromLinkPressed != null) AddFromLinkPressed(this, new AddFromLinkEventArgs(form.Result));
+                    if (AddFromLinkPressed != null) AddFromLinkPressed(this, new PathEventArgs(form.Result));
                 }
             }
         }
@@ -221,12 +223,19 @@ namespace VPhotoLoader.Forms
 
         private void btnImport_Click(object sender, EventArgs e)
         {
-            if (ImportSourcesPressed != null) ImportSourcesPressed(this, EventArgs.Empty);
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (ImportSourcesPressed != null) ImportSourcesPressed(this, new PathEventArgs(openFileDialog1.FileName));
+            }   
         }
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-            if (ExportSourcesPressed != null) ExportSourcesPressed(this, EventArgs.Empty);
+#warning filtres
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (ExportSourcesPressed != null) ExportSourcesPressed(this, new PathEventArgs(saveFileDialog1.FileName));
+            }            
         }
 
 

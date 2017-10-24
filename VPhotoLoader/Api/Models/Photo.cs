@@ -5,7 +5,7 @@ using System.Text;
 
 namespace VPhotoLoader.Api
 {
-    public class Photo
+    public class Photo: IEquatable<Photo>
     {
         public int ID { get; private set; }
 
@@ -25,13 +25,18 @@ namespace VPhotoLoader.Api
 
         public override int GetHashCode()
         {
-            return ID.GetHashCode();
+            return ID.GetHashCode() * OwnerID.GetHashCode();
         }
 
         public override bool Equals(object obj)
         {
             Photo p = obj as Photo;
-            return p != null && p.ID.Equals(this.ID);
+            return p != null && Equals(p);
+        }
+
+        public bool Equals(Photo other)
+        {
+            return other.ID.Equals(this.ID) && other.OwnerID.Equals(this.OwnerID);
         }
     }
 }

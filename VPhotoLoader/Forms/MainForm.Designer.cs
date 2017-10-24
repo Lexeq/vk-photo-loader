@@ -60,6 +60,8 @@
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.srcMenu.SuspendLayout();
@@ -378,6 +380,16 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ImagePump";
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "vsrc";
+            this.openFileDialog1.Filter = "VKPhotoLoader files (*.vsrc)|*.vsrc\"";
+            // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.DefaultExt = "vsrc";
+            this.saveFileDialog1.Filter = "VKPhotoLoader files (*.vsrc)|*.vsrc\"";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -392,7 +404,7 @@
             this.Icon = global::VPhotoLoader.Properties.Resources.favicon;
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "ImgePump Next";
+            this.Text = "VKPhotoLoader";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -440,6 +452,8 @@
         private System.Windows.Forms.Label lblImagesInfo;
         private System.Windows.Forms.ToolStripMenuItem selectAlbumsToolStripMenuItem;
         private System.Windows.Forms.CheckedListBox clbPages;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 

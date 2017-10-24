@@ -59,12 +59,12 @@ namespace VPhotoLoader.Core
         {
             view.AddFromFriensPressed += new EventHandler(view_AddFromFriensPressed);
             view.AddFromGroupsPressed += new EventHandler(view_AddFromGroupsPressed);
-            view.AddFromLinkPressed += new EventHandler<AddFromLinkEventArgs>(view_AddFromLinkPressed);
+            view.AddFromLinkPressed += new EventHandler<PathEventArgs>(view_AddFromLinkPressed);
             view.CancelPressed += new EventHandler(view_CancelPressed);
             view.ClearSourcesPressed += new EventHandler(view_ClearSourcesPressed);
-            view.ExportSourcesPressed += new EventHandler(view_ExportSourcesPressed);
+            view.ExportSourcesPressed += new EventHandler<PathEventArgs>(view_ExportSourcesPressed);
             view.GetImagesPressed += new EventHandler(view_GetImagesPressed);
-            view.ImportSourcesPressed += new EventHandler(view_ImportSourcesPressed);
+            view.ImportSourcesPressed += new EventHandler<PathEventArgs>(view_ImportSourcesPressed);
             view.LoadImagesPressed += new EventHandler(view_LoadImagesPressed);
             view.LoginPressed += new EventHandler(view_LoginPressed);
             view.LogoutPressed += new EventHandler(view_LogoutPressed);
@@ -104,7 +104,7 @@ namespace VPhotoLoader.Core
             currentTaskTokenSource.Cancel();
         }
 
-        void view_AddFromLinkPressed(object sender, AddFromLinkEventArgs e)
+        void view_AddFromLinkPressed(object sender, PathEventArgs e)
         {
             if (VKSession.API == null)
             {
@@ -114,11 +114,11 @@ namespace VPhotoLoader.Core
 
             IVkPage page;
             Album album;
-            if (_vk.TryParsePage(e.Link, out page))
+            if (_vk.TryParsePage(e.Path, out page))
             {
                 _photoSources.Add(page, _vk.GetAlbums(page.ID));
             }
-            else if (_vk.TryParseAlbum(e.Link, out album))
+            else if (_vk.TryParseAlbum(e.Path, out album))
             {
                 page = _vk.GetByID(album.OwnerId);
                 if (_photoSources.Contains(page.ID))
@@ -212,7 +212,7 @@ namespace VPhotoLoader.Core
             }
 
             var sources = _photoSources.Checked().Cast<PhotoSourceItem>().ToArray();
-            
+
             currentTaskTokenSource = new CancellationTokenSource();
             _reporter_ProgressChanged(this, new ProgressChangedEventArgs(0, "Starting"));
 
@@ -225,7 +225,7 @@ namespace VPhotoLoader.Core
                 var task = (Task<PhotoCollection[]>)ct;
                 if (task.IsFaulted)
                 {
-                    Logger.Write("GetImages", task.Exception); 
+                    Logger.Write("GetImages", task.Exception);
                 }
                 else if (!task.IsCanceled)
                 {
@@ -286,42 +286,55 @@ namespace VPhotoLoader.Core
 
 
 
-        void view_ExportSourcesPressed(object sender, EventArgs e)
+        void view_ExportSourcesPressed(object sender, PathEventArgs e)
         {
-#warning FilePathChoooe
-            using (StreamWriter sw = new StreamWriter("src.imp", false, Encoding.UTF8))
+            try
             {
-                foreach (var item in _photoSources)
+                using (StreamWriter sw = new StreamWriter(e.Path, false, Encoding.UTF8))
                 {
-                    sw.WriteLine(string.Format("{0} {1}",
-                        item.Id,
-                        string.Join("|", item.Albums.Checked().Select(a => a.ID))));
+                    foreach (var item in _photoSources)
+                    {
+                        sw.WriteLine(string.Format("{0} {1}",
+                            item.Id,
+                            string.Join("|", item.Albums.Checked().Select(a => a.ID))));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Logger.Write("ExportSources", ex);
+                _mainViev.ShowMessage("Не удалось сохранить спиок.");
             }
         }
 
-        void view_ImportSourcesPressed(object sender, EventArgs e)
+        void view_ImportSourcesPressed(object sender, PathEventArgs e)
         {
-#warning FilePathChoooe
-            var file = File.ReadAllLines("src.imp", Encoding.UTF8);
-            _photoSources.Clear();
-
-            foreach (var str in file)
+            try
             {
-                var parts = str.Split();
-                var id = parts[0];
-                var albums = parts[1].Split('|');
-                 IVkPage pg = _vk.GetByID(int.Parse(id));
-                PhotoSourceItem psi = new PhotoSourceItem(pg.ID, pg.ToString(), _vk.GetAlbums(pg.ID));
+                var file = File.ReadAllLines(e.Path, Encoding.UTF8);
+                _photoSources.Clear();
 
-                foreach (var item in psi.Albums)
+                foreach (var str in file)
                 {
-                    bool z = Array.IndexOf(albums, item.Item.ID.ToString()) >= 0;
-                    item.Check = z;
+                    var parts = str.Split();
+                    var id = parts[0];
+                    var albums = parts[1].Split('|');
+                    IVkPage pg = _vk.GetByID(int.Parse(id));
+                    PhotoSourceItem psi = new PhotoSourceItem(pg.ID, pg.ToString(), _vk.GetAlbums(pg.ID));
+
+                    foreach (var item in psi.Albums)
+                    {
+                        bool z = Array.IndexOf(albums, item.Item.ID.ToString()) >= 0;
+                        item.Check = z;
+                    }
+
+                    _photoSources.Add(psi);
                 }
-
-                _photoSources.Add(psi);
-
+            }
+            catch (Exception ex)
+            {
+                Logger.Write("ImportSources", ex);
+                _mainViev.ShowMessage("Не удалось загрузить спиок.");
             }
         }
 

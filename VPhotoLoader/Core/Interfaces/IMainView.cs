@@ -14,15 +14,15 @@ namespace VPhotoLoader.Core
         event EventHandler LogoutPressed;
         event EventHandler AddFromFriensPressed;
         event EventHandler AddFromGroupsPressed;
-        event EventHandler<AddFromLinkEventArgs> AddFromLinkPressed;
+        event EventHandler<PathEventArgs> AddFromLinkPressed;
         event EventHandler ClearSourcesPressed;
         event EventHandler<IndexEventArgs> RemoveSourcePressed;
         event EventHandler<IndexEventArgs> SelectAlbumsPressed;
         event EventHandler CancelPressed;
         event EventHandler GetImagesPressed;
         event EventHandler LoadImagesPressed;
-        event EventHandler ImportSourcesPressed;
-        event EventHandler ExportSourcesPressed;
+        event EventHandler<PathEventArgs> ImportSourcesPressed;
+        event EventHandler<PathEventArgs> ExportSourcesPressed;
 
         //Login, logout, getphotos and loadphotos buttons should be disabled
         void LockInterface();

@@ -19,7 +19,7 @@ namespace VPhotoLoader.SqLiteManager
             using (SQLiteConnection conn = new SQLiteConnection(string.Format("Data Source={0};", path)))
             {
                 conn.Open();
-                string sql = "CREATE  TABLE LoadedPhotos (ID INTEGER PRIMARY KEY  NOT NULL , OwnerID INTEGER NOT NULL , AlbumID INTEGER NOT NULL , Link TEXT)";
+                string sql = "CREATE  TABLE LoadedPhotos (ID INTEGER NOT NULL , AlbumID INTEGER NOT NULL , OwnerID INTEGER NOT NULL , Path TEXT)";
                 using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
                 {
                     cmd.ExecuteNonQuery();
@@ -40,9 +40,10 @@ namespace VPhotoLoader.SqLiteManager
                     {
                         foreach (var photo in photos)
                         {
-                            cmd.CommandText = string.Format("INSERT INTO LoadedPhotos (ID, OwnerID, AlbumID, Link) VALUES " +
-                                              "('{0}', '{1}', '{2}', '{3}')", photo.ID, photo.OwnerID, photo.AlbumID, photo.Link);
-                            cmd.ExecuteNonQuery();
+                            cmd.CommandText = string.Format("INSERT INTO LoadedPhotos (ID, AlbumID, OwnerID, Path) VALUES " +
+                                              "('{0}', '{1}', '{2}', '{3}')", photo.ID, photo.AlbumID, photo.OwnerID, photo.Link);
+                            cmd.ExecuteNonQuery();  
+#warning no column path
                         }
                         transaction.Commit();
                     }

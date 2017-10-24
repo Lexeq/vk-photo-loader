@@ -96,8 +96,6 @@ namespace VPhotoLoader.Core
                     {
                         foreach (var photo in item.Photos)
                         {
-#warning delIt
-                            //Thread.Sleep(900);
                             ctoken.ThrowIfCancellationRequested();
 
                             string ownerName = item.Owner.Any(c => UnallowabledChars.Contains(c)) ? new string(item.Owner.Where(c => !UnallowabledChars.Contains(c)).ToArray()) : item.Owner;
