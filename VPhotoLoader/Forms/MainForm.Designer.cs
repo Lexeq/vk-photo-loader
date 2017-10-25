@@ -317,7 +317,7 @@
             this.grboxImagesRun.Controls.Add(this.lblCurrentProgress);
             this.grboxImagesRun.Controls.Add(this.progressBar1);
             this.grboxImagesRun.Controls.Add(this.btnCancel);
-            this.grboxImagesRun.Location = new System.Drawing.Point(616, 82);
+            this.grboxImagesRun.Location = new System.Drawing.Point(378, 82);
             this.grboxImagesRun.Name = "grboxImagesRun";
             this.grboxImagesRun.Size = new System.Drawing.Size(200, 103);
             this.grboxImagesRun.TabIndex = 4;
@@ -383,18 +383,18 @@
             // openFileDialog1
             // 
             this.openFileDialog1.DefaultExt = "vsrc";
-            this.openFileDialog1.Filter = "VKPhotoLoader files (*.vsrc)|*.vsrc\"";
+            this.openFileDialog1.Filter = "VKPL Files(*.vsrc)|*.vsrc";
             // 
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "vsrc";
-            this.saveFileDialog1.Filter = "VKPhotoLoader files (*.vsrc)|*.vsrc\"";
+            this.saveFileDialog1.Filter = "VKPL Files(*.vsrc)|*.vsrc";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(828, 287);
+            this.ClientSize = new System.Drawing.Size(589, 287);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox1);

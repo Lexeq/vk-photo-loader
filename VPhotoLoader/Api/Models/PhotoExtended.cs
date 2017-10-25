@@ -5,8 +5,6 @@ namespace VPhotoLoader.Api
 {
     internal class PhotoExtended
     {
-        private string _maxRes = null;
-
         public int Id { get; set; }
 
         [JsonProperty("album_id")]

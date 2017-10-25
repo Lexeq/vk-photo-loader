@@ -207,7 +207,6 @@ namespace VPhotoLoader.Forms
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-#warning ???
             Application.Exit();
         }
 
@@ -231,7 +230,6 @@ namespace VPhotoLoader.Forms
 
         private void btnExport_Click(object sender, EventArgs e)
         {
-#warning filtres
             if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 if (ExportSourcesPressed != null) ExportSourcesPressed(this, new PathEventArgs(saveFileDialog1.FileName));

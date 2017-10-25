@@ -19,7 +19,7 @@ namespace VPhotoLoader.SqLiteManager
             using (SQLiteConnection conn = new SQLiteConnection(string.Format("Data Source={0};", path)))
             {
                 conn.Open();
-                string sql = "CREATE  TABLE LoadedPhotos (ID INTEGER NOT NULL , AlbumID INTEGER NOT NULL , OwnerID INTEGER NOT NULL , Path TEXT)";
+                string sql = "CREATE TABLE LoadedPhotos (ID INTEGER NOT NULL , AlbumID INTEGER NOT NULL , OwnerID INTEGER NOT NULL , Link TEXT)";
                 using (SQLiteCommand cmd = new SQLiteCommand(sql, conn))
                 {
                     cmd.ExecuteNonQuery();
@@ -40,10 +40,14 @@ namespace VPhotoLoader.SqLiteManager
                     {
                         foreach (var photo in photos)
                         {
-                            cmd.CommandText = string.Format("INSERT INTO LoadedPhotos (ID, AlbumID, OwnerID, Path) VALUES " +
-                                              "('{0}', '{1}', '{2}', '{3}')", photo.ID, photo.AlbumID, photo.OwnerID, photo.Link);
+                            cmd.CommandText = "INSERT INTO LoadedPhotos (ID, AlbumID, OwnerID, Link) VALUES (@ID, @AlbumID, @OwnerID, @Link)";
+                          
+                            cmd.Parameters.AddWithValue("@ID", photo.ID);
+                            cmd.Parameters.AddWithValue("@AlbumID", photo.AlbumID);
+                            cmd.Parameters.AddWithValue("@OwnerID", photo.OwnerID);
+                            cmd.Parameters.AddWithValue("@Link", photo.Link);
+                            
                             cmd.ExecuteNonQuery();  
-#warning no column path
                         }
                         transaction.Commit();
                     }
@@ -60,7 +64,11 @@ namespace VPhotoLoader.SqLiteManager
                 conn.Open();
                 using (SQLiteCommand command = new SQLiteCommand(conn))
                 {
-                    command.CommandText = string.Format("SELECT * FROM LoadedPhotos WHERE OwnerID IS {0} AND AlbumID IS {1}", ownerId, albumId);
+                    command.CommandText = "SELECT * FROM LoadedPhotos WHERE OwnerID IS @OwnerID AND AlbumID IS @AlbumID";
+                    
+                    command.Parameters.AddWithValue("@OwnerID", ownerId);
+                    command.Parameters.AddWithValue("@AlbumID", albumId);
+                    
                     var reader = command.ExecuteReader();
                     while (reader.Read())
                     {

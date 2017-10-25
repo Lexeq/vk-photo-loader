@@ -86,6 +86,7 @@
     <Compile Include="AppPaths.cs" />
     <Compile Include="Authorization\Authorization.cs" />
     <Compile Include="Authorization\AuthorizationException.cs" />
+    <Compile Include="Core\CheckableItemExt.cs" />
     <Compile Include="Forms\AuthorizationForm.cs">
       <SubType>Form</SubType>
     </Compile>

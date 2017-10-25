@@ -18,7 +18,6 @@ namespace VPhotoLoader.Core
         private IChooseView _chooseView;
         private VKEngine _vk;
 
-
         private Task currentTask;
         private CancellationTokenSource currentTaskTokenSource;
 
@@ -241,7 +240,7 @@ namespace VPhotoLoader.Core
 
         void view_LoadImagesPressed(object sender, EventArgs e)
         {
-            if (_newPhotos == null)
+            if (_newPhotos == null || _newPhotos.Length == 0) 
             {
                 _mainViev.ShowMessage("Отсутствуют изображения для загрузки.");
                 return;
@@ -278,13 +277,6 @@ namespace VPhotoLoader.Core
             }, System.Threading.Tasks.TaskContinuationOptions.None);
 
         }
-
-
-
-
-
-
-
 
         void view_ExportSourcesPressed(object sender, PathEventArgs e)
         {
@@ -338,12 +330,6 @@ namespace VPhotoLoader.Core
             }
         }
 
-
-
-
-
-
-
         void view_LogoutPressed(object sender, EventArgs e)
         {
             File.Delete(AppPaths.SessionFilePath);
@@ -358,37 +344,11 @@ namespace VPhotoLoader.Core
                 VKSession.API = api;
                 VKSession.ToFile(AppPaths.SessionFilePath);
             }
-            catch (Authorization.AuthorizationException) { }
-
-        }
-
-
-
-
-
-
-
-
-    }
-
-    public static class CheckableItemExt
-    {
-        public static IEnumerable<CheckableItem<T>> ToCheckable<T>(this IEnumerable<T> items, bool check)
-        {
-            foreach (var item in items)
+            catch (Exception ex)
             {
-                yield return new CheckableItem<T>(item, check);
+                Logger.Write("Login", ex);
             }
         }
-
-        public static IEnumerable<T> Checked<T>(this IEnumerable<CheckableItem<T>> citems)
-        {
-            return citems.Where(c => c.Check).Select(c => c.Item);
-        }
-
-        public static IEnumerable<ICheckable> Checked(this IEnumerable<ICheckable> citems)
-        {
-            return citems.Where(c => c.Check).Select(c => c);
-        }
     }
+
 }
