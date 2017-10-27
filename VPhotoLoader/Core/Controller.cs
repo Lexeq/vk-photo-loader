@@ -301,6 +301,12 @@ namespace VPhotoLoader.Core
 
         void view_ImportSourcesPressed(object sender, PathEventArgs e)
         {
+            if (VKSession.API == null)
+            {
+                _mainViev.ShowMessage("Необходимо выполнить вход!");
+                return;
+            }
+
             try
             {
                 var file = File.ReadAllLines(e.Path, Encoding.UTF8);
@@ -334,6 +340,7 @@ namespace VPhotoLoader.Core
         {
             File.Delete(AppPaths.SessionFilePath);
             VKSession.API = null;
+
         }
 
         void view_LoginPressed(object sender, EventArgs e)
