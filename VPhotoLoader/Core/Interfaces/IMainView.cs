@@ -24,10 +24,7 @@ namespace VPhotoLoader.Core
         event EventHandler<PathEventArgs> ImportSourcesPressed;
         event EventHandler<PathEventArgs> ExportSourcesPressed;
 
-        //Login, logout, getphotos and loadphotos buttons should be disabled
-        void LockInterface();
-        //Any buttons can be enabled
-        void UnlockInterface();
+        bool TaskRunning { set; }
 
         string InfoLabel { set; }
         int TaskProgress { set; }

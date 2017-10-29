@@ -7,19 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using VPhotoLoader.Api;
+using System.Security.Policy;
 
 namespace VPhotoLoader.Forms
 {
-    public partial class AuthorizationForm : Form
+    public partial class WebForm : Form
     {
-        public bool AuthSuccessful { get; set; }
+     //   public bool AuthSuccessful { get; set; }
 
-        public VKApi API { get; set; }
+    //    public VKApi API { get; set; }
 
-        public AuthorizationForm()
+        public WebBrowser Browser { get { return webBrowser; } }
+
+        public WebForm()
         {
             InitializeComponent();
-            AuthSuccessful = false;
+           // AuthSuccessful = false;
         }
     }
 }

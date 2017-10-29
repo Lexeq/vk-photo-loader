@@ -85,6 +85,20 @@ namespace VPhotoLoader.Forms
             }
         }
 
+        public bool TaskRunning
+        {
+            set
+            {
+                this.Invoke(new Action(() =>
+                {
+                    grboxImages.Visible = !value;
+                    grboxImages.Enabled = !value;
+                    grboxImagesRun.Visible = value;
+                    grboxImagesRun.Enabled = value;
+                }));
+            }
+        }
+
         #endregion
 
         public MainForm()
@@ -236,29 +250,6 @@ namespace VPhotoLoader.Forms
             }            
         }
 
-
         #endregion
-
-        public void UnlockInterface()
-        {
-            this.Invoke(new Action(() =>
-            {
-                grboxImages.Visible = true;
-                grboxImages.Enabled = true;
-                grboxImagesRun.Visible = false;
-                grboxImagesRun.Enabled = false;
-            }));
-        }
-
-        public void LockInterface()
-        {
-            this.Invoke(new Action(() =>
-            {
-                grboxImages.Visible = false;
-                grboxImages.Enabled = false;
-                grboxImagesRun.Visible = true;
-                grboxImagesRun.Enabled = true;
-            }));
-        }
     }
 }

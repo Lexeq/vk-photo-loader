@@ -13,24 +13,30 @@ namespace VPhotoLoader.Authorization
     {
         private const string authpattern = @"access_token=(?<token>[a-z0-9]{0,})&expires_in=\d{1,}&user_id=(?<id>\d{1,})";
         private const string appid = "4377803";
+
+        private static bool _auth = false;
+        private static VKApi _api;
+        private static WebForm webForm = new WebForm();
+
         public static VKApi Authorize()
         {
             string authURI = @"https://oauth.vk.com/authorize?client_id=" + appid + "&scope=335878&redirect_uri=" +
                 @"https://oauth.vk.com/blank.html&display=mobile&response_type=token&v=5.28";
-            AuthorizationForm aform = new AuthorizationForm();
-            WebBrowser browser = (WebBrowser)aform.Controls["webBrowser"];
+            WebBrowser browser = webForm.Browser;
             browser.Navigated += new WebBrowserNavigatedEventHandler(browser_Navigated);
             browser.Navigate(authURI);
-            aform.ShowDialog();
-            if (aform.AuthSuccessful)
+            _auth = false;
+            webForm.ShowDialog();
+            if (_auth)
             {
-                var api = aform.API;
-                aform.Dispose();
+                webForm.Dispose();
+                var api = _api;
+                _api = null;
                 return api;
             }
             else
             {
-                aform.Dispose();
+                webForm.Dispose();
                 throw new AuthorizationException();
             }
         }
@@ -39,21 +45,20 @@ namespace VPhotoLoader.Authorization
         {
             string uri = e.Url.AbsoluteUri;
             WebBrowser browser = (WebBrowser)sender;
-            AuthorizationForm aform = (AuthorizationForm)browser.Parent;
+            WebForm aform = (WebForm)browser.Parent;
             if (uri.StartsWith(@"https://oauth.vk.com/blank.html"))
             {
                 var reg = Regex.Match(uri, authpattern);
                 var token = reg.Groups["token"].Value;
                 var user = reg.Groups["id"].Value;
 
-                aform.AuthSuccessful = true;
-                aform.API = new VKApi(user, token);
+                _auth = true;
+                _api = new VKApi(user, token);
             }
 
             else
             {
-                aform.AuthSuccessful = false;
-                aform.API = null;
+                
             }
 
             aform.Close();

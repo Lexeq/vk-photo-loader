@@ -215,7 +215,7 @@ namespace VPhotoLoader.Core
             currentTaskTokenSource = new CancellationTokenSource();
             _reporter_ProgressChanged(this, new ProgressChangedEventArgs(0, "Starting"));
 
-            _mainViev.LockInterface();
+            _mainViev.TaskRunning = true;
 
             currentTask = _vk.GetUnloadedPhotosAsynch(sources, currentTaskTokenSource.Token, _reporter);
 
@@ -231,7 +231,7 @@ namespace VPhotoLoader.Core
                     _newPhotos = task.Result;
                 }
 
-                _mainViev.UnlockInterface();
+                _mainViev.TaskRunning = false;
                 _mainViev.InfoLabel = string.Format("Новых изображений: {0}", _newPhotos == null ? 0 : _newPhotos.Sum(p => p.Photos.Length));
 
             }, System.Threading.Tasks.TaskContinuationOptions.None);
@@ -255,7 +255,7 @@ namespace VPhotoLoader.Core
             currentTaskTokenSource = new CancellationTokenSource();
             _reporter_ProgressChanged(this, new ProgressChangedEventArgs(0, "Starting"));
 
-            _mainViev.LockInterface();
+            _mainViev.TaskRunning = true;
 
             currentTask = _vk.LoadPhotosAsynch(_newPhotos, currentTaskTokenSource.Token, _reporter);
 
@@ -271,9 +271,7 @@ namespace VPhotoLoader.Core
                     _mainViev.InfoLabel = "Отменено";
                 }
                 _newPhotos = null;
-                _mainViev.UnlockInterface();
-
-
+                _mainViev.TaskRunning = false;
             }, System.Threading.Tasks.TaskContinuationOptions.None);
 
         }
