@@ -29,14 +29,12 @@ namespace VPhotoLoader.Authorization
             webForm.ShowDialog();
             if (_auth)
             {
-                webForm.Dispose();
                 var api = _api;
                 _api = null;
                 return api;
             }
             else
             {
-                webForm.Dispose();
                 throw new AuthorizationException();
             }
         }
