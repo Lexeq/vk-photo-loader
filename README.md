@@ -1,2 +1,1 @@
-# IT DOESN'T WORK FOR NOW
-# WIP
+Helper for loading images from vk.com.
