@@ -84,7 +84,8 @@
             this.Controls.Add(this.tbLink);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "AddFromLink";
+            this.Name = "AddFromLinkForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "AddFromLink";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HotKeys);
             this.ResumeLayout(false);

@@ -106,6 +106,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "ChooseForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Выберите элементы";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.HotKeys);
             this.srcMenu.ResumeLayout(false);

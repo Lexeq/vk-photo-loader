@@ -9,6 +9,7 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.ComponentModel;
+using VPhotoLoader.Forms;
 
 namespace VPhotoLoader.Core
 {
@@ -38,7 +39,7 @@ namespace VPhotoLoader.Core
             _vk = vk;
             _vk.OwnerChanged += new EventHandler(_vk_OwnerChanged);
             _vk_OwnerChanged(null, null);
-
+            _mainViev.LoggedIn = VKSession.API != null;
             _photoSources = new PhotoSourceCollection();
             _photoSources.CollectionChanged += new NotifyCollectionChangedEventHandler(_photoSources_CollectionChanged);
         }
@@ -70,6 +71,12 @@ namespace VPhotoLoader.Core
             view.RemoveSourcePressed += new EventHandler<IndexEventArgs>(view_RemoveSourcePressed);
             view.SelectAlbumsPressed += new EventHandler<IndexEventArgs>(view_SelectAlbumsPressed);
             view.ItemCheckStateChanged += new EventHandler<CheckEventArgs>(view_ItemCheckStateChanged);
+            view.HelpPressed += new EventHandler(view_HelpPressed);
+        }
+
+        void view_HelpPressed(object sender, EventArgs e)
+        {
+            _mainViev.ShowMessage("Для авторизации используестся браузер Internet Explorer. После выполнения входа, данные об авторизации сохраняются в браузере.\nПри необходимости произведите выход из аккаунта вручную, запустив Internet Explorer и перейдя на https://vk.com/. \nЧтобы удалить сведения об авторизации из программы достаточно нажать кнопку \"Выход\".");
         }
 
         void view_ItemCheckStateChanged(object sender, CheckEventArgs e)
@@ -240,7 +247,7 @@ namespace VPhotoLoader.Core
 
         void view_LoadImagesPressed(object sender, EventArgs e)
         {
-            if (_newPhotos == null || _newPhotos.Length == 0) 
+            if (_newPhotos == null || _newPhotos.Length == 0)
             {
                 _mainViev.ShowMessage("Отсутствуют изображения для загрузки.");
                 return;
@@ -336,9 +343,10 @@ namespace VPhotoLoader.Core
 
         void view_LogoutPressed(object sender, EventArgs e)
         {
-            File.Delete(AppPaths.SessionFilePath);
+            if (File.Exists(AppPaths.SessionFilePath))
+                File.Delete(AppPaths.SessionFilePath);
             VKSession.API = null;
-
+            _mainViev.LoggedIn = false;
         }
 
         void view_LoginPressed(object sender, EventArgs e)
@@ -347,6 +355,7 @@ namespace VPhotoLoader.Core
             {
                 var api = Authorization.Authorization.Authorize();
                 VKSession.API = api;
+                _mainViev.LoggedIn = true;
                 VKSession.ToFile(AppPaths.SessionFilePath);
             }
             catch (Exception ex)

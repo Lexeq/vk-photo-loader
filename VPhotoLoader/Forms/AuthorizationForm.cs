@@ -13,16 +13,11 @@ namespace VPhotoLoader.Forms
 {
     public partial class WebForm : Form
     {
-     //   public bool AuthSuccessful { get; set; }
-
-    //    public VKApi API { get; set; }
-
         public WebBrowser Browser { get { return webBrowser; } }
 
         public WebForm()
         {
             InitializeComponent();
-           // AuthSuccessful = false;
         }
     }
 }

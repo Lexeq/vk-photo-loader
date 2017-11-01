@@ -24,7 +24,8 @@ namespace VPhotoLoader.Forms
         public event EventHandler<PathEventArgs> ImportSourcesPressed;
         public event EventHandler<PathEventArgs> ExportSourcesPressed;
         public event EventHandler<CheckEventArgs> ItemCheckStateChanged;
-        
+        public event EventHandler HelpPressed;
+
         public void ShowMessage(string message)
         {
             MessageBox.Show(message);
@@ -96,6 +97,17 @@ namespace VPhotoLoader.Forms
                     grboxImagesRun.Visible = value;
                     grboxImagesRun.Enabled = value;
                 }));
+            }
+        }
+
+        public bool LoggedIn
+        {
+            set
+            {
+                btnLogIn.Enabled = !value;
+                btnLogOut.Enabled = value;
+                groupBox2.Enabled = value;
+                grboxImages.Enabled = value;
             }
         }
 
@@ -177,7 +189,6 @@ namespace VPhotoLoader.Forms
 
         #endregion
 
-
         #region ButtonsClick
 
         private void btnLogOut_Click(object sender, EventArgs e)
@@ -248,6 +259,11 @@ namespace VPhotoLoader.Forms
             {
                 if (ExportSourcesPressed != null) ExportSourcesPressed(this, new PathEventArgs(saveFileDialog1.FileName));
             }            
+        }
+
+        private void btnHelp_Click(object sender, EventArgs e)
+        {
+            if (HelpPressed != null) HelpPressed(this, EventArgs.Empty);
         }
 
         #endregion

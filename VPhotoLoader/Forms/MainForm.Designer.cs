@@ -57,7 +57,7 @@
             this.lblCurrentProgress = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.btnSettings = new System.Windows.Forms.Button();
+            this.btnHelp = new System.Windows.Forms.Button();
             this.btnExit = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
@@ -350,14 +350,15 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
             // 
-            // btnSettings
+            // btnHelp
             // 
-            this.btnSettings.Location = new System.Drawing.Point(6, 19);
-            this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(188, 23);
-            this.btnSettings.TabIndex = 5;
-            this.btnSettings.Text = "Настройки";
-            this.btnSettings.UseVisualStyleBackColor = true;
+            this.btnHelp.Location = new System.Drawing.Point(6, 19);
+            this.btnHelp.Name = "btnHelp";
+            this.btnHelp.Size = new System.Drawing.Size(188, 23);
+            this.btnHelp.TabIndex = 5;
+            this.btnHelp.Text = "Справка";
+            this.btnHelp.UseVisualStyleBackColor = true;
+            this.btnHelp.Click += new System.EventHandler(this.btnHelp_Click);
             // 
             // btnExit
             // 
@@ -371,7 +372,7 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.btnSettings);
+            this.groupBox4.Controls.Add(this.btnHelp);
             this.groupBox4.Controls.Add(this.btnExit);
             this.groupBox4.Location = new System.Drawing.Point(378, 191);
             this.groupBox4.Name = "groupBox4";
@@ -442,7 +443,7 @@
         private System.Windows.Forms.GroupBox grboxImages;
         private System.Windows.Forms.Button btnImageLinks;
         private System.Windows.Forms.Button btnLoad;
-        private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Button btnHelp;
         private System.Windows.Forms.Button btnExit;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.GroupBox grboxImagesRun;

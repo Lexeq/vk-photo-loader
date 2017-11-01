@@ -23,8 +23,10 @@ namespace VPhotoLoader.Core
         event EventHandler LoadImagesPressed;
         event EventHandler<PathEventArgs> ImportSourcesPressed;
         event EventHandler<PathEventArgs> ExportSourcesPressed;
+        event EventHandler HelpPressed;
 
         bool TaskRunning { set; }
+        bool LoggedIn { set; }
 
         string InfoLabel { set; }
         int TaskProgress { set; }
